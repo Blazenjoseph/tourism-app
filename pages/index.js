@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 export default function Home() {
   const [pincode, setPincode] = useState("");
@@ -14,8 +15,16 @@ export default function Home() {
   return (
     <div>
       <nav className="navbar">
-        <div className="container">
+        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div className="logo">TravelMitra</div>
+          <div style={{ display: "flex", gap: 20 }}>
+            <Link href="/trip-planner" style={{ textDecoration: "none", color: "#333", fontWeight: 500 }}>
+              AI Trip Planner
+            </Link>
+            <Link href="/heritage-explorer" style={{ textDecoration: "none", color: "#333", fontWeight: 500 }}>
+              Heritage Explorer
+            </Link>
+          </div>
         </div>
       </nav>
 
@@ -34,6 +43,15 @@ export default function Home() {
               Explore
             </button>
           </form>
+
+          <div style={{ marginTop: 40, display: "flex", gap: 16, justifyContent: "center" }}>
+            <Link href="/trip-planner" className="btn" style={{ textDecoration: "none", background: "#333" }}>
+              🗓️ Plan a trip with AI
+            </Link>
+            <Link href="/heritage-explorer" className="btn" style={{ textDecoration: "none", background: "#333" }}>
+              📸 Explore a heritage site
+            </Link>
+          </div>
         </div>
       </section>
     </div>
