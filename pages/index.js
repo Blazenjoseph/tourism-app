@@ -15,21 +15,19 @@ export default function Home() {
   return (
     <div>
       <nav className="navbar">
-        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div className="logo">TravelMitra</div>
-          <div style={{ display: "flex", gap: 20 }}>
-            <Link href="/trip-planner" style={{ textDecoration: "none", color: "#333", fontWeight: 500 }}>
-              AI Trip Planner
-            </Link>
-            <Link href="/heritage-explorer" style={{ textDecoration: "none", color: "#333", fontWeight: 500 }}>
-              Heritage Explorer
-            </Link>
+        <div className="container">
+          <Link href="/" className="logo">TravelMitra</Link>
+          <div className="nav-links">
+            <Link href="/trip-planner">AI Trip Planner</Link>
+            <Link href="/heritage-explorer">Heritage Explorer</Link>
+            <Link href="/wishlist">Wishlist</Link>
           </div>
         </div>
       </nav>
 
       <section className="hero">
         <div className="container">
+          <span className="eyebrow">✨ AI-Powered Travel, Made for India</span>
           <h1>Discover local stays, guides & experiences</h1>
           <p>Enter your destination PIN code to explore what's nearby</p>
           <form className="search-box" onSubmit={handleSearch}>
@@ -39,18 +37,36 @@ export default function Home() {
               value={pincode}
               onChange={(e) => setPincode(e.target.value)}
             />
-            <button type="submit" className="btn">
-              Explore
-            </button>
+            <button type="submit" className="btn">Explore</button>
           </form>
 
-          <div style={{ marginTop: 40, display: "flex", gap: 16, justifyContent: "center" }}>
-            <Link href="/trip-planner" className="btn" style={{ textDecoration: "none", background: "#333" }}>
+          <div className="hero-actions">
+            <Link href="/trip-planner" className="btn-secondary">
               🗓️ Plan a trip with AI
             </Link>
-            <Link href="/heritage-explorer" className="btn" style={{ textDecoration: "none", background: "#333" }}>
+            <Link href="/heritage-explorer" className="btn-secondary">
               📸 Explore a heritage site
             </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="feature-strip">
+        <div className="container">
+          <div className="feature-item">
+            <span className="icon">🗺️</span>
+            <h4>Any PIN code in India</h4>
+            <p>Real, live attraction data for every district</p>
+          </div>
+          <div className="feature-item">
+            <span className="icon">🤖</span>
+            <h4>AI-personalized itineraries</h4>
+            <p>Day-by-day plans built around your budget</p>
+          </div>
+          <div className="feature-item">
+            <span className="icon">🏛️</span>
+            <h4>Instant heritage insights</h4>
+            <p>Snap a photo, learn the story behind it</p>
           </div>
         </div>
       </section>
