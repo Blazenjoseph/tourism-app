@@ -96,6 +96,7 @@ export default function Search() {
             <Link href="/trip-planner">AI Trip Planner</Link>
             <Link href="/heritage-explorer">Heritage Explorer</Link>
             <Link href="/wishlist">Wishlist</Link>
+            <Link href="/packing-list">Packing List</Link>
           </div>
         </div>
       </nav>
