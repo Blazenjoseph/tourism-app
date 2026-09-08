@@ -55,12 +55,16 @@ export default async function handler(req, res) {
         name: place.name,
         rating: place.rate || null,
         distance_m: Math.round(place.dist),
+        lat: place.point?.lat || null,
+        lng: place.point?.lon || null,
       }));
 
     res.status(200).json({
       pincode,
       city: cityName,
       state,
+      cityLat: geoData.lat,
+      cityLng: geoData.lon,
       attractions,
     });
   } catch (err) {

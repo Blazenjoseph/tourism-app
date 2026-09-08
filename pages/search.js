@@ -1,6 +1,11 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const ListingsMap = dynamic(() => import("../components/ListingsMap"), {
+  ssr: false,
+});
 
 function weatherDescription(code) {
   if (code === 0) return { text: "Clear sky", icon: "☀️" };
@@ -63,7 +68,7 @@ export default function Search() {
           setAttractionsError(data.error);
         } else {
           setAttractions(data.attractions || []);
-          setCityInfo({ city: data.city, state: data.state });
+          setCityInfo({ city: data.city, state: data.state, lat: data.cityLat, lng: data.cityLng });
         }
         setAttractionsLoading(false);
       })
@@ -79,6 +84,8 @@ export default function Search() {
       })
       .catch(() => {});
   }, [pincode]);
+
+  const mapCenter = !attractionsLoading;
 
   return (
     <div>
@@ -122,6 +129,17 @@ export default function Search() {
             </div>
           )}
         </div>
+
+        {mapCenter && (
+          <div style={{ marginTop: 24 }}>
+            <ListingsMap
+              listings={listings}
+              attractions={attractions}
+              cityName={cityInfo?.city}
+              cityCenter={cityInfo?.lat ? { lat: cityInfo.lat, lng: cityInfo.lng } : null}
+            />
+          </div>
+        )}
 
         <div className="grid">
           {listings.map((item) => {
