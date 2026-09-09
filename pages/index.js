@@ -16,6 +16,8 @@ const translations = {
     heritageExplorer: "Heritage Explorer",
     wishlist: "Wishlist",
     packingList: "Packing List",
+    budgetTracker: "Budget Tracker",
+    translator: "Translator",
     feature1Title: "Any PIN code in India",
     feature1Desc: "Real, live attraction data for every district",
     feature2Title: "AI-personalized itineraries",
@@ -36,6 +38,8 @@ const translations = {
     heritageExplorer: "धरोहर एक्सप्लोरर",
     wishlist: "पसंदीदा",
     packingList: "पैकिंग सूची",
+    budgetTracker: "बजट ट्रैकर",
+    translator: "अनुवादक",
     feature1Title: "भारत का कोई भी पिन कोड",
     feature1Desc: "हर जिले के लिए वास्तविक, लाइव आकर्षण डेटा",
     feature2Title: "एआई-व्यक्तिगत यात्रा योजना",
@@ -56,6 +60,8 @@ const translations = {
     heritageExplorer: "ಪರಂಪರೆ ಎಕ್ಸ್ಪ್ಲೋರರ್",
     wishlist: "ಇಷ್ಟಪಟ್ಟವು",
     packingList: "ಪ್ಯಾಕಿಂಗ್ ಪಟ್ಟಿ",
+    budgetTracker: "ಬಜೆಟ್ ಟ್ರ್ಯಾಕರ್",
+    translator: "ಅನುವಾದಕ",
     feature1Title: "ಭಾರತದ ಯಾವುದೇ ಪಿನ್ ಕೋಡ್",
     feature1Desc: "ಪ್ರತಿ ಜಿಲ್ಲೆಗೆ ನೈಜ, ಲೈವ್ ಆಕರ್ಷಣೆ ಡೇಟಾ",
     feature2Title: "ಎಐ-ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಪ್ರವಾಸ ಯೋಜನೆ",
@@ -76,6 +82,8 @@ const translations = {
     heritageExplorer: "പൈതൃക എക്സ്പ്ലോറർ",
     wishlist: "ഇഷ്ടപ്പെട്ടവ",
     packingList: "പാക്കിംഗ് ലിസ്റ്റ്",
+    budgetTracker: "ബജറ്റ് ട്രാക്കർ",
+    translator: "വിവർത്തകൻ",
     feature1Title: "ഇന്ത്യയിലെ ഏത് പിൻ കോഡും",
     feature1Desc: "ഓരോ ജില്ലയ്ക്കും യഥാർത്ഥ, തത്സമയ ആകർഷണ ഡാറ്റ",
     feature2Title: "എഐ-വ്യക്തിഗതമാക്കിയ യാത്രാ പദ്ധതികൾ",
@@ -96,6 +104,8 @@ const translations = {
     heritageExplorer: "பாரம்பரிய எக்ஸ்புளோரர்",
     wishlist: "விருப்பப்பட்டியல்",
     packingList: "பேக்கிங் பட்டியல்",
+    budgetTracker: "பட்ஜெட் டிராக்கர்",
+    translator: "மொழிபெயர்ப்பாளர்",
     feature1Title: "இந்தியாவின் எந்த பின் கோடும்",
     feature1Desc: "ஒவ்வொரு மாவட்டத்திற்கும் உண்மையான, நேரடி ஈர்ப்பு தரவு",
     feature2Title: "AI-தனிப்பயனாக்கப்பட்ட பயணத் திட்டங்கள்",
@@ -139,6 +149,9 @@ export default function Home() {
             <Link href="/heritage-explorer">{t.heritageExplorer}</Link>
             <Link href="/wishlist">{t.wishlist}</Link>
             <Link href="/packing-list">{t.packingList}</Link>
+            <Link href="/budget-tracker">{t.budgetTracker || "Budget Tracker"}</Link>
+            <Link href="/translator">{t.translator || "Translator"}</Link>
+            <Link href="/voice-assistant">Negotiator</Link>
             <div style={{ display: "flex", gap: 4 }}>
               {langCodes.map((code) => (
                 <button
