@@ -1,11 +1,14 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { AppShell } from "@/components/app-shell";
 
 const ListingsMap = dynamic(() => import("../components/ListingsMap"), {
   ssr: false,
 });
+
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800";
 
 function weatherDescription(code) {
   if (code === 0) return { text: "Clear sky", icon: "☀️" };
@@ -29,6 +32,7 @@ export default function Search() {
   const [attractionsLoading, setAttractionsLoading] = useState(true);
   const [attractionsError, setAttractionsError] = useState("");
   const [wishlistIds, setWishlistIds] = useState([]);
+  const [activeFilter, setActiveFilter] = useState("all");
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("wishlist") || "[]");
@@ -57,7 +61,8 @@ export default function Search() {
       .then((data) => {
         setListings(data.listings || []);
         setLoading(false);
-      });
+      })
+      .catch(() => setLoading(false));
 
     setAttractionsLoading(true);
     setAttractionsError("");
@@ -85,79 +90,131 @@ export default function Search() {
       .catch(() => {});
   }, [pincode]);
 
+  const filteredListings = useMemo(() => {
+    if (activeFilter === "all") return listings;
+    return listings.filter((l) => l.type?.toLowerCase() === activeFilter.toLowerCase());
+  }, [listings, activeFilter]);
+
+  const filterCounts = useMemo(() => {
+    const counts = { all: listings.length };
+    listings.forEach((l) => {
+      const t = l.type?.toLowerCase();
+      if (t) counts[t] = (counts[t] || 0) + 1;
+    });
+    return counts;
+  }, [listings]);
+
   const mapCenter = !attractionsLoading;
 
   return (
-    <div>
-      <nav className="navbar">
-        <div className="container">
-          <Link href="/" className="logo">TravelMitra</Link>
-          <div className="nav-links">
-            <Link href="/trip-planner">AI Trip Planner</Link>
-            <Link href="/heritage-explorer">Heritage Explorer</Link>
-            <Link href="/wishlist">Wishlist</Link>
-            <Link href="/packing-list">Packing List</Link>
-            <Link href="/budget-tracker">Budget Tracker</Link>
-            <Link href="/translator">Translator</Link>
-            <Link href="/voice-assistant">Negotiator</Link>
+    <AppShell>
+      <section className="relative overflow-hidden rounded-[2rem] border-[3px] border-neutral-950 bg-neutral-950 px-6 py-8 text-white shadow-[7px_7px_0_0_#f97316] sm:px-9">
+        <div className="absolute -right-12 -top-10 h-48 w-48 rounded-full bg-fuchsia-500 blur-3xl" />
+        <div className="relative flex flex-wrap items-center justify-between gap-5">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[.18em] text-orange-300">Your local radar</p>
+            <h1 className="tm-heading mt-2 text-3xl sm:text-5xl">
+              {loading ? "Searching..." : `${listings.length} places near ${pincode}`}
+              {cityInfo && (
+                <span className="ml-2 block text-base font-bold tracking-normal text-white/65 sm:inline">
+                  {" "}— {cityInfo.city}, {cityInfo.state}
+                </span>
+              )}
+            </h1>
           </div>
-        </div>
-      </nav>
-
-      <div className="container">
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 16, marginTop: 30 }}>
-          <h2 style={{ margin: 0 }}>
-            {loading ? "Searching..." : `${listings.length} places near ${pincode}`}
-            {cityInfo && (
-              <span style={{ color: "#888", fontWeight: 400, fontSize: 16 }}>
-                {" "}— {cityInfo.city}, {cityInfo.state}
-              </span>
-            )}
-          </h2>
 
           {weather && (
-            <div style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 10,
-              background: "white",
-              padding: "10px 18px",
-              borderRadius: 30,
-              boxShadow: "0 4px 14px rgba(60,40,20,0.08)",
-            }}>
+            <div className="relative flex items-center gap-3 rounded-2xl border-2 border-white bg-white px-4 py-3 text-neutral-950 shadow-[3px_3px_0_0_#f97316]">
               <span style={{ fontSize: 22 }}>{weatherDescription(weather.weatherCode).icon}</span>
               <div style={{ lineHeight: 1.2 }}>
-                <div style={{ fontWeight: 700, fontSize: 15 }}>{Math.round(weather.temperature)}°C</div>
-                <div style={{ fontSize: 12, color: "#999" }}>{weatherDescription(weather.weatherCode).text}</div>
+                <div className="text-sm font-black">{Math.round(weather.temperature)}°C</div>
+                <div className="text-xs font-bold text-neutral-500">{weatherDescription(weather.weatherCode).text}</div>
               </div>
             </div>
           )}
         </div>
+      </section>
 
-        {mapCenter && (
-          <div style={{ marginTop: 24 }}>
-            <ListingsMap
-              listings={listings}
-              attractions={attractions}
-              cityName={cityInfo?.city}
-              cityCenter={cityInfo?.lat ? { lat: cityInfo.lat, lng: cityInfo.lng } : null}
-            />
-          </div>
-        )}
+      {mapCenter && (
+        <div className="mt-8 overflow-hidden rounded-[1.75rem] border-[3px] border-neutral-950 bg-white p-2 shadow-[5px_5px_0_0_#171717]">
+          <ListingsMap
+            listings={listings}
+            attractions={attractions}
+            cityName={cityInfo?.city}
+            cityCenter={cityInfo?.lat ? { lat: cityInfo.lat, lng: cityInfo.lng } : null}
+          />
+        </div>
+      )}
 
-        <div className="grid">
-          {listings.map((item) => {
+      {/* Categories Filter Bar */}
+      {listings.length > 0 && (
+        <div className="mt-8 flex flex-wrap items-center gap-2">
+          {[
+            { id: "all", label: "All" },
+            { id: "homestay", label: "Homestays" },
+            { id: "hotel", label: "Hotels" },
+            { id: "guide", label: "Guides" },
+            { id: "experience", label: "Experiences" },
+          ].map((cat) => {
+            const count = filterCounts[cat.id] ?? 0;
+            if (cat.id !== "all" && count === 0) return null;
+            const isActive = activeFilter === cat.id;
+            return (
+              <button
+                key={cat.id}
+                onClick={() => setActiveFilter(cat.id)}
+                className={`rounded-full border-2 border-neutral-950 px-4 py-1.5 text-xs font-black uppercase tracking-wider transition-all ${
+                  isActive
+                    ? "bg-neutral-950 text-white shadow-[3px_3px_0_0_#f97316]"
+                    : "bg-white text-neutral-800 shadow-[2px_2px_0_0_#171717] hover:bg-orange-100"
+                }`}
+              >
+                {cat.label} ({count})
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Listings Grid with Skeleton Loading */}
+      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {loading ? (
+          [1, 2, 3].map((n) => (
+            <div
+              key={n}
+              className="h-80 animate-pulse rounded-[1.75rem] border-[3px] border-neutral-950 bg-white/70 p-4 shadow-[5px_5px_0_0_#171717]"
+            >
+              <div className="h-44 rounded-2xl bg-neutral-200" />
+              <div className="mt-4 h-6 w-3/4 rounded-md bg-neutral-200" />
+              <div className="mt-2 h-4 w-1/2 rounded-md bg-neutral-200" />
+            </div>
+          ))
+        ) : (
+          filteredListings.map((item) => {
             const isSaved = wishlistIds.includes(item._id);
             return (
-              <div key={item._id} className="card" style={{ position: "relative" }}>
+              <div
+                key={item._id}
+                className="group relative overflow-hidden rounded-[1.75rem] border-[3px] border-neutral-950 bg-white shadow-[5px_5px_0_0_#171717] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0_0_#171717]"
+              >
                 <Link href={`/listing/${item._id}`}>
-                  <div className="img-wrap">
-                    <img src={item.image} alt={item.name} />
-                    <span className="price-badge">₹{item.price}</span>
+                  <div className="relative h-52 overflow-hidden border-b-2 border-neutral-950 bg-neutral-100">
+                    <img
+                      src={item.image || FALLBACK_IMAGE}
+                      alt={item.name}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src = FALLBACK_IMAGE;
+                      }}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <span className="absolute right-3 top-3 rounded-xl border-2 border-neutral-950 bg-yellow-300 px-3 py-1.5 text-sm font-black shadow-[2px_2px_0_0_#171717]">
+                      ₹{item.price}
+                    </span>
                   </div>
-                  <div className="card-body">
-                    <h3>{item.name}</h3>
-                    <div className="meta">
+                  <div className="p-5">
+                    <h3 className="tm-heading text-2xl">{item.name}</h3>
+                    <div className="mt-2 text-sm font-bold text-neutral-600">
                       {item.type} · {item.city} · ⭐ {item.rating}
                     </div>
                   </div>
@@ -167,55 +224,46 @@ export default function Search() {
                     e.preventDefault();
                     toggleWishlist(item);
                   }}
-                  style={{
-                    position: "absolute",
-                    top: 14,
-                    left: 14,
-                    background: "white",
-                    border: "none",
-                    borderRadius: "50%",
-                    width: 34,
-                    height: 34,
-                    cursor: "pointer",
-                    boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
-                    fontSize: 16,
-                  }}
+                  className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border-2 border-neutral-950 bg-white text-base shadow-[2px_2px_0_0_#171717] transition-colors hover:bg-rose-300"
                   title={isSaved ? "Remove from wishlist" : "Save to wishlist"}
                 >
                   {isSaved ? "❤️" : "🤍"}
                 </button>
               </div>
             );
-          })}
-        </div>
+          })
+        )}
+      </div>
 
-        {!loading && listings.length === 0 && (
-          <p>No hotel/homestay listings in our database for this PIN code yet — but check the real nearby attractions below. (Try PIN 570001 for a full demo with sample hotels and guides.)</p>
+      {!loading && listings.length === 0 && (
+        <p className="mt-10 rounded-2xl border-2 border-neutral-950 bg-yellow-100 p-5 font-semibold leading-relaxed">
+          No hotel/homestay listings in our database for this PIN code yet — but check the real nearby attractions below. (Try PIN 570001, 403001, or 175131 for curated stays and tours.)
+        </p>
+      )}
+
+      <section className="tm-surface my-10 p-5 sm:p-7">
+        <p className="text-xs font-black uppercase tracking-[.16em] text-fuchsia-700">Pinpoint picks</p>
+        <h2 className="tm-heading mt-2 text-3xl">Nearby attractions to explore</h2>
+
+        {attractionsLoading && <p className="mt-5 font-semibold text-neutral-500">Loading real attraction data...</p>}
+        {attractionsError && <p className="mt-5 font-semibold text-neutral-500">{attractionsError}</p>}
+
+        {attractions && attractions.length === 0 && !attractionsLoading && (
+          <p className="mt-5 font-semibold text-neutral-500">No listed attractions found nearby.</p>
         )}
 
-        <div style={{ marginTop: 10, marginBottom: 60 }}>
-          <h2>Nearby attractions to explore</h2>
-
-          {attractionsLoading && <p>Loading real attraction data...</p>}
-          {attractionsError && <p style={{ color: "#888" }}>{attractionsError}</p>}
-
-          {attractions && attractions.length === 0 && !attractionsLoading && (
-            <p style={{ color: "#888" }}>No listed attractions found nearby.</p>
-          )}
-
-          {attractions && attractions.length > 0 && (
-            <ul style={{ paddingLeft: 20, lineHeight: 1.9 }}>
-              {attractions.map((a, i) => (
-                <li key={i}>
-                  <strong>{a.name}</strong>
-                  {a.rating ? ` — rated ${a.rating}/7` : ""}
-                  {a.distance_m ? ` (${(a.distance_m / 1000).toFixed(1)} km away)` : ""}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      </div>
-    </div>
+        {attractions && attractions.length > 0 && (
+          <ul className="mt-5 grid gap-3">
+            {attractions.map((a, i) => (
+              <li key={i} className="rounded-xl border-2 border-neutral-950 bg-orange-50 px-4 py-3 font-semibold">
+                <strong>{a.name}</strong>
+                {a.rating ? ` — rated ${a.rating}/7` : ""}
+                {a.distance_m ? ` (${(a.distance_m / 1000).toFixed(1)} km away)` : ""}
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
+    </AppShell>
   );
 }

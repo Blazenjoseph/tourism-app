@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { AppShell, ToolIntro } from "@/components/app-shell";
 
 export default function Wishlist() {
   const [items, setItems] = useState([]);
@@ -16,58 +17,36 @@ export default function Wishlist() {
   }
 
   return (
-    <div>
-      <nav className="navbar">
-        <div className="container">
-          <Link href="/" className="logo">TravelMitra</Link>
-          <div className="nav-links">
-            <Link href="/trip-planner">AI Trip Planner</Link>
-            <Link href="/heritage-explorer">Heritage Explorer</Link>
-            <Link href="/wishlist">Wishlist</Link>
-          </div>
-        </div>
-      </nav>
-
-      <div className="container detail-page">
-        <h1>Your Wishlist</h1>
-        <p style={{ color: "#666" }}>Places you've saved for later.</p>
+    <AppShell>
+      <ToolIntro eyebrow="For future-you" title="Your Wishlist" description="Every stay that sparked a little ‘wait, we should actually go there’ moment." />
 
         {items.length === 0 && (
-          <p style={{ color: "#888", marginTop: 30 }}>
-            No saved places yet. Browse listings and tap the ♡ icon to save one.
-          </p>
+          <div className="tm-surface mt-10 px-6 py-14 text-center">
+            <p className="text-4xl">♡</p>
+            <h2 className="tm-heading mt-4 text-3xl">Your save pile is empty.</h2>
+            <p className="mx-auto mt-3 max-w-md font-semibold leading-relaxed text-neutral-600">Browse a PIN-code search and tap the heart on any stay you want to keep close.</p>
+            <Link href="/home" className="mt-6 inline-flex rounded-xl border-2 border-neutral-950 bg-orange-400 px-5 py-3 font-black uppercase tracking-[.1em] shadow-[3px_3px_0_0_#171717] transition-transform hover:-translate-y-0.5">Explore places</Link>
+          </div>
         )}
 
-        <div className="grid">
+        <div className="mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((item) => (
-            <div key={item._id} className="card" style={{ position: "relative" }}>
+            <div key={item._id} className="group relative overflow-hidden rounded-[1.75rem] border-[3px] border-neutral-950 bg-white shadow-[5px_5px_0_0_#171717] transition-all hover:-translate-y-1 hover:shadow-[8px_8px_0_0_#171717]">
               <Link href={`/listing/${item._id}`}>
-                <div className="img-wrap">
-                  <img src={item.image} alt={item.name} />
-                  <span className="price-badge">₹{item.price}</span>
+                <div className="relative h-52 overflow-hidden border-b-2 border-neutral-950">
+                  <img src={item.image} alt={item.name} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                  <span className="absolute right-3 top-3 rounded-xl border-2 border-neutral-950 bg-yellow-300 px-3 py-1.5 text-sm font-black shadow-[2px_2px_0_0_#171717]">₹{item.price}</span>
                 </div>
-                <div className="card-body">
-                  <h3>{item.name}</h3>
-                  <div className="meta">
+                <div className="p-5">
+                  <h3 className="tm-heading text-2xl">{item.name}</h3>
+                  <div className="mt-2 text-sm font-bold text-neutral-600">
                     {item.type} · {item.city} · ⭐ {item.rating}
                   </div>
                 </div>
               </Link>
               <button
                 onClick={() => removeItem(item._id)}
-                style={{
-                  position: "absolute",
-                  top: 14,
-                  left: 14,
-                  background: "white",
-                  border: "none",
-                  borderRadius: "50%",
-                  width: 34,
-                  height: 34,
-                  cursor: "pointer",
-                  boxShadow: "0 4px 14px rgba(0,0,0,0.15)",
-                  fontSize: 16,
-                }}
+                className="absolute left-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border-2 border-neutral-950 bg-white font-black shadow-[2px_2px_0_0_#171717] transition-colors hover:bg-rose-300"
                 title="Remove from wishlist"
               >
                 ✕
@@ -75,7 +54,6 @@ export default function Wishlist() {
             </div>
           ))}
         </div>
-      </div>
-    </div>
+    </AppShell>
   );
 }

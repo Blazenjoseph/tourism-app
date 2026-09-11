@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
-import Link from "next/link";
+import { AppShell, ToolIntro } from "@/components/app-shell";
 
 export default function Booking() {
   const router = useRouter();
@@ -23,20 +23,15 @@ export default function Booking() {
   }
 
   return (
-    <div>
-      <nav className="navbar">
-        <div className="container">
-          <Link href="/" className="logo">
-            TravelMitra
-          </Link>
-        </div>
-      </nav>
+    <AppShell>
+      <ToolIntro eyebrow="Almost there" title="Confirm your booking" description="This is a demo checkout—no real payment is taken. Just one final name check and your travel proof is ready." />
 
-      <div className="container detail-page">
+      <div className="mx-auto mt-10 max-w-lg">
         {!result && (
-          <form onSubmit={handleBook} style={{ maxWidth: 400 }}>
-            <h1>Confirm your booking</h1>
-            <p style={{ color: "#888" }}>
+          <form onSubmit={handleBook} className="tm-surface p-6 sm:p-8">
+            <p className="text-xs font-black uppercase tracking-[.16em] text-fuchsia-700">One last thing</p>
+            <h2 className="tm-heading mt-2 text-3xl">Who&apos;s checking in?</h2>
+            <p className="mt-3 font-semibold leading-relaxed text-neutral-600">
               This is a mock payment for demo purposes — no real charge is made.
             </p>
             <input
@@ -45,30 +40,24 @@ export default function Booking() {
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              style={{
-                display: "block",
-                width: "100%",
-                padding: 12,
-                margin: "16px 0",
-                borderRadius: 8,
-                border: "1px solid #ddd",
-              }}
+              className="tm-input mt-6"
             />
-            <button type="submit" className="btn" disabled={loading}>
+            <button type="submit" className="mt-3 w-full rounded-2xl border-2 border-neutral-950 bg-orange-400 px-5 py-3.5 font-black uppercase tracking-[.1em] text-neutral-950 shadow-[4px_4px_0_0_#171717] transition-all hover:-translate-y-0.5 hover:bg-pink-400 disabled:cursor-not-allowed disabled:opacity-60" disabled={loading}>
               {loading ? "Processing..." : "Pay (Mock) & Confirm"}
             </button>
           </form>
         )}
 
         {result && result.qrDataUrl && (
-          <div className="qr-box">
-            <h1>Booking Confirmed 🎉</h1>
-            <p>Confirmation ID: {result.confirmationId}</p>
-            <img src={result.qrDataUrl} alt="Booking QR code" />
-            <p>Show this QR code at check-in.</p>
+          <div className="tm-surface text-center p-6 sm:p-8">
+            <p className="text-xs font-black uppercase tracking-[.16em] text-fuchsia-700">You&apos;re all set</p>
+            <h2 className="tm-heading mt-2 text-4xl">Booking confirmed 🎉</h2>
+            <p className="mt-4 font-semibold">Confirmation ID: <span className="font-black">{result.confirmationId}</span></p>
+            <img src={result.qrDataUrl} alt="Booking QR code" className="mx-auto my-6 max-w-56 rounded-2xl border-2 border-neutral-950" />
+            <p className="font-semibold text-neutral-600">Show this QR code at check-in.</p>
           </div>
         )}
       </div>
-    </div>
+    </AppShell>
   );
 }

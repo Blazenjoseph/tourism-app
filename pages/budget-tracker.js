@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import { AppShell, ToolIntro } from "@/components/app-shell";
 
 const categories = [
   { key: "accommodation", label: "🏨 Accommodation" },
@@ -66,26 +66,12 @@ export default function BudgetTracker() {
   })).filter((c) => c.total > 0);
 
   return (
-    <div>
-      <nav className="navbar">
-        <div className="container">
-          <Link href="/" className="logo">TravelMitra</Link>
-          <div className="nav-links">
-            <Link href="/trip-planner">AI Trip Planner</Link>
-            <Link href="/heritage-explorer">Heritage Explorer</Link>
-            <Link href="/wishlist">Wishlist</Link>
-            <Link href="/packing-list">Packing List</Link>
-            <Link href="/budget-tracker">Budget Tracker</Link>
-          </div>
-        </div>
-      </nav>
+    <AppShell>
+      <ToolIntro eyebrow="Spending, but make it visible" title="Trip Budget Tracker" description="Track every rupee against your trip budget so the fun doesn&apos;t turn into a spreadsheet surprise." />
 
-      <div className="container detail-page">
-        <h1>Trip Budget Tracker 💰</h1>
-        <p style={{ color: "#666" }}>Track your spending against your trip budget.</p>
-
-        <div style={{ maxWidth: 480, marginTop: 20 }}>
-          <label style={{ fontSize: 14, color: "#666", marginBottom: 6, display: "block" }}>
+      <div className="mt-10 grid gap-8 lg:grid-cols-[minmax(0,.82fr)_minmax(0,1.18fr)]">
+        <div className="tm-surface h-fit p-5 sm:p-7">
+          <label className="mb-2 block text-xs font-black uppercase tracking-[.14em] text-neutral-600">
             Total trip budget (₹)
           </label>
           <input
@@ -93,31 +79,23 @@ export default function BudgetTracker() {
             placeholder="e.g. 25000"
             value={totalBudget}
             onChange={handleBudgetChange}
-            style={{
-              display: "block",
-              width: "100%",
-              padding: 12,
-              marginBottom: 20,
-              borderRadius: 8,
-              border: "1px solid #ddd",
-              fontSize: 15,
-            }}
+            className="tm-input"
           />
 
           {budgetNum > 0 && (
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6, fontSize: 14 }}>
+            <div className="mt-5 rounded-2xl border-2 border-neutral-950 bg-orange-50 p-4">
+              <div className="mb-2 flex justify-between gap-4 text-sm font-black">
                 <span>Spent: ₹{totalSpent.toLocaleString()}</span>
-                <span style={{ color: remaining < 0 ? "#c0392b" : "#2e7d32" }}>
+                <span className={remaining < 0 ? "text-red-700" : "text-emerald-700"}>
                   {remaining < 0 ? `Over by ₹${Math.abs(remaining).toLocaleString()}` : `₹${remaining.toLocaleString()} left`}
                 </span>
               </div>
-              <div style={{ background: "#eee", borderRadius: 20, height: 12, overflow: "hidden" }}>
+              <div className="h-3 overflow-hidden rounded-full border-2 border-neutral-950 bg-white">
                 <div
                   style={{
                     width: `${percentUsed}%`,
                     height: "100%",
-                    background: percentUsed >= 100 ? "#c0392b" : "linear-gradient(135deg, #ec7a3f, #d9622b)",
+                    background: percentUsed >= 100 ? "#ef4444" : "linear-gradient(135deg, #f97316, #ec4899)",
                     transition: "width 0.3s ease",
                   }}
                 />
@@ -125,12 +103,12 @@ export default function BudgetTracker() {
             </div>
           )}
 
-          <form onSubmit={addExpense} style={{ background: "white", padding: 18, borderRadius: 16, boxShadow: "0 2px 10px rgba(60,40,20,0.05)" }}>
-            <h3 style={{ marginTop: 0, fontSize: 16 }}>Add an expense</h3>
+          <form onSubmit={addExpense} className="mt-6 rounded-[1.5rem] border-2 border-neutral-950 bg-neutral-950 p-5 text-white">
+            <h3 className="tm-heading text-2xl">Add an expense</h3>
             <select
               value={form.category}
               onChange={(e) => setForm({ ...form, category: e.target.value })}
-              style={{ display: "block", width: "100%", padding: 10, marginBottom: 10, borderRadius: 8, border: "1px solid #ddd" }}
+              className="tm-input mt-4"
             >
               {categories.map((c) => (
                 <option key={c.key} value={c.key}>{c.label}</option>
@@ -142,23 +120,25 @@ export default function BudgetTracker() {
               value={form.amount}
               onChange={(e) => setForm({ ...form, amount: e.target.value })}
               required
-              style={{ display: "block", width: "100%", padding: 10, marginBottom: 10, borderRadius: 8, border: "1px solid #ddd" }}
+              className="tm-input mt-3"
             />
             <input
               type="text"
               placeholder="Note (optional, e.g. Hotel Chamundi 2 nights)"
               value={form.note}
               onChange={(e) => setForm({ ...form, note: e.target.value })}
-              style={{ display: "block", width: "100%", padding: 10, marginBottom: 10, borderRadius: 8, border: "1px solid #ddd" }}
+              className="tm-input mt-3"
             />
-            <button type="submit" className="btn" style={{ width: "100%" }}>Add Expense</button>
+            <button type="submit" className="mt-3 w-full rounded-2xl border-2 border-white bg-orange-400 px-5 py-3 font-black uppercase tracking-[.1em] text-neutral-950 shadow-[3px_3px_0_0_#fff] transition-colors hover:bg-pink-400">Add Expense</button>
           </form>
+        </div>
 
+        <div className="space-y-8">
           {byCategory.length > 0 && (
-            <div style={{ marginTop: 24 }}>
-              <h3 style={{ fontSize: 16 }}>By category</h3>
+            <div className="tm-surface p-5 sm:p-7">
+              <h3 className="tm-heading text-2xl">By category</h3>
               {byCategory.map((c) => (
-                <div key={c.key} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", fontSize: 14 }}>
+                <div key={c.key} className="mt-4 flex items-center justify-between border-b-2 border-dashed border-neutral-200 pb-3 text-sm font-bold">
                   <span>{c.label}</span>
                   <strong>₹{c.total.toLocaleString()}</strong>
                 </div>
@@ -167,20 +147,20 @@ export default function BudgetTracker() {
           )}
 
           {expenses.length > 0 && (
-            <div style={{ marginTop: 24 }}>
-              <h3 style={{ fontSize: 16 }}>All expenses</h3>
+            <div className="tm-surface p-5 sm:p-7">
+              <h3 className="tm-heading text-2xl">All expenses</h3>
               {expenses.slice().reverse().map((e) => {
                 const cat = categories.find((c) => c.key === e.category);
                 return (
-                  <div key={e.id} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid #eee", fontSize: 13.5 }}>
+                  <div key={e.id} className="mt-3 flex items-center justify-between gap-3 border-b-2 border-dashed border-neutral-200 pb-3 text-sm">
                     <div>
                       <div>{cat?.label} {e.note && `— ${e.note}`}</div>
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                    <div className="flex items-center gap-3">
                       <strong>₹{e.amount.toLocaleString()}</strong>
                       <button
                         onClick={() => removeExpense(e.id)}
-                        style={{ background: "none", border: "none", color: "#c0392b", cursor: "pointer", fontSize: 16 }}
+                        className="rounded-lg border-2 border-red-600 px-2 py-1 font-black text-red-700 transition-colors hover:bg-red-50"
                         title="Remove"
                       >
                         ✕
@@ -193,6 +173,6 @@ export default function BudgetTracker() {
           )}
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }

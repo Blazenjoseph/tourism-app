@@ -8,7 +8,7 @@
     "rating": 4.6,
     "lat": 12.3061,
     "lng": 76.6547,
-    "image": "https://images.unsplash.com/photo-1501117716987-c8e1ecb210af?w=800",
+    "image": "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
     "description": "A cozy homestay run by a local family, minutes from Mysore Palace, with home-cooked South Indian meals included."
   },
   {
@@ -20,7 +20,7 @@
     "rating": 4.8,
     "lat": 12.3052,
     "lng": 76.6552,
-    "image": "https://images.unsplash.com/photo-1600100397608-59c9f4e1a7f0?w=800",
+    "image": "https://images.unsplash.com/photo-1609137144813-7d9921338f24?w=800",
     "description": "A verified local guide leads a 2-hour walking tour through Mysore Palace and the surrounding heritage quarter."
   },
   {
@@ -30,8 +30,8 @@
     "city": "Mysore",
     "price": 3200,
     "rating": 4.2,
-    "lat": 12.3070,
-    "lng": 76.6560,
+    "lat": 12.307,
+    "lng": 76.656,
     "image": "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
     "description": "Comfortable 3-star hotel in the heart of Mysore, walking distance to major attractions."
   },
@@ -46,5 +46,53 @@
     "lng": 76.6693,
     "image": "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800",
     "description": "Guided sunrise trek up Chamundi Hills with a stop at the Nandi statue and temple."
+  },
+  {
+    "name": "Ocean Breeze Beach Villa",
+    "type": "homestay",
+    "pincode": "403001",
+    "city": "Panaji, Goa",
+    "price": 3800,
+    "rating": 4.9,
+    "lat": 15.482,
+    "lng": 73.807,
+    "image": "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?w=800",
+    "description": "Idyllic beachfront villa with private veranda, swaying palm trees, and fresh Goan coastal breakfast."
+  },
+  {
+    "name": "Old Goa Heritage Churches Walk",
+    "type": "guide",
+    "pincode": "403001",
+    "city": "Panaji, Goa",
+    "price": 650,
+    "rating": 4.8,
+    "lat": 15.5009,
+    "lng": 73.9116,
+    "image": "https://images.unsplash.com/photo-1587974928442-77dc3e0dba72?w=800",
+    "description": "UNESCO World Heritage exploration covering Basilica of Bom Jesus, Se Cathedral, and Latin Quarter stories."
+  },
+  {
+    "name": "Snow Peak Cedar Cottage",
+    "type": "homestay",
+    "pincode": "175131",
+    "city": "Manali",
+    "price": 2800,
+    "rating": 4.7,
+    "lat": 32.253,
+    "lng": 77.175,
+    "image": "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?w=800",
+    "description": "Traditional wooden cottage nestled amidst deodar pine forests and apple orchards with panoramic snow peak vistas."
+  },
+  {
+    "name": "Solang Valley Paragliding & Trek",
+    "type": "experience",
+    "pincode": "175131",
+    "city": "Manali",
+    "price": 1200,
+    "rating": 4.9,
+    "lat": 32.316,
+    "lng": 77.157,
+    "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800",
+    "description": "Thrilling tandem paragliding glide over Solang Valley followed by a guided pine forest trail hike."
   }
 ]

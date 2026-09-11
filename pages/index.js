@@ -1,225 +1,206 @@
-import { useState, useEffect } from "react";
-import { useRouter } from "next/router";
-import Link from "next/link";
+"use client";
 
-const translations = {
-  en: {
-    label: "EN",
-    eyebrow: "✨ AI-Powered Travel, Made for India",
-    heading: "Discover local stays, guides & experiences",
-    subheading: "Enter your destination PIN code to explore what's nearby",
-    placeholder: "Enter PIN code, e.g. 570001",
-    explore: "Explore",
-    planTrip: "🗓️ Plan a trip with AI",
-    heritage: "📸 Explore a heritage site",
-    tripPlanner: "AI Trip Planner",
-    heritageExplorer: "Heritage Explorer",
-    wishlist: "Wishlist",
-    packingList: "Packing List",
-    budgetTracker: "Budget Tracker",
-    translator: "Translator",
-    feature1Title: "Any PIN code in India",
-    feature1Desc: "Real, live attraction data for every district",
-    feature2Title: "AI-personalized itineraries",
-    feature2Desc: "Day-by-day plans built around your budget",
-    feature3Title: "Instant heritage insights",
-    feature3Desc: "Snap a photo, learn the story behind it",
-  },
-  hi: {
-    label: "हिं",
-    eyebrow: "✨ भारत के लिए एआई-संचालित यात्रा",
-    heading: "स्थानीय ठहरने, गाइड और अनुभव खोजें",
-    subheading: "आस-पास क्या है यह जानने के लिए अपना पिन कोड डालें",
-    placeholder: "पिन कोड डालें, जैसे 570001",
-    explore: "खोजें",
-    planTrip: "🗓️ एआई से यात्रा योजना बनाएं",
-    heritage: "📸 धरोहर स्थल देखें",
-    tripPlanner: "एआई यात्रा योजना",
-    heritageExplorer: "धरोहर एक्सप्लोरर",
-    wishlist: "पसंदीदा",
-    packingList: "पैकिंग सूची",
-    budgetTracker: "बजट ट्रैकर",
-    translator: "अनुवादक",
-    feature1Title: "भारत का कोई भी पिन कोड",
-    feature1Desc: "हर जिले के लिए वास्तविक, लाइव आकर्षण डेटा",
-    feature2Title: "एआई-व्यक्तिगत यात्रा योजना",
-    feature2Desc: "आपके बजट के अनुसार दिन-प्रतिदिन की योजना",
-    feature3Title: "तुरंत धरोहर जानकारी",
-    feature3Desc: "एक फोटो लें, उसके पीछे की कहानी जानें",
-  },
-  kn: {
-    label: "ಕನ್",
-    eyebrow: "✨ ಭಾರತಕ್ಕಾಗಿ ಎಐ-ಚಾಲಿತ ಪ್ರವಾಸ",
-    heading: "ಸ್ಥಳೀಯ ವಸತಿ, ಮಾರ್ಗದರ್ಶಿಗಳು ಮತ್ತು ಅನುಭವಗಳನ್ನು ಅನ್ವೇಷಿಸಿ",
-    subheading: "ಹತ್ತಿರದಲ್ಲಿ ಏನಿದೆ ಎಂದು ತಿಳಿಯಲು ನಿಮ್ಮ ಪಿನ್ ಕೋಡ್ ನಮೂದಿಸಿ",
-    placeholder: "ಪಿನ್ ಕೋಡ್ ನಮೂದಿಸಿ, ಉದಾ. 570001",
-    explore: "ಅನ್ವೇಷಿಸಿ",
-    planTrip: "🗓️ ಎಐ ಜೊತೆ ಪ್ರವಾಸ ಯೋಜಿಸಿ",
-    heritage: "📸 ಪರಂಪರೆ ತಾಣ ಅನ್ವೇಷಿಸಿ",
-    tripPlanner: "ಎಐ ಪ್ರವಾಸ ಯೋಜಕ",
-    heritageExplorer: "ಪರಂಪರೆ ಎಕ್ಸ್ಪ್ಲೋರರ್",
-    wishlist: "ಇಷ್ಟಪಟ್ಟವು",
-    packingList: "ಪ್ಯಾಕಿಂಗ್ ಪಟ್ಟಿ",
-    budgetTracker: "ಬಜೆಟ್ ಟ್ರ್ಯಾಕರ್",
-    translator: "ಅನುವಾದಕ",
-    feature1Title: "ಭಾರತದ ಯಾವುದೇ ಪಿನ್ ಕೋಡ್",
-    feature1Desc: "ಪ್ರತಿ ಜಿಲ್ಲೆಗೆ ನೈಜ, ಲೈವ್ ಆಕರ್ಷಣೆ ಡೇಟಾ",
-    feature2Title: "ಎಐ-ವೈಯಕ್ತಿಕಗೊಳಿಸಿದ ಪ್ರವಾಸ ಯೋಜನೆ",
-    feature2Desc: "ನಿಮ್ಮ ಬಜೆಟ್ಗೆ ಅನುಗುಣವಾಗಿ ದಿನದಿಂದ ದಿನದ ಯೋಜನೆ",
-    feature3Title: "ತಕ್ಷಣದ ಪರಂಪರೆ ಮಾಹಿತಿ",
-    feature3Desc: "ಫೋಟೋ ತೆಗೆಯಿರಿ, ಅದರ ಹಿಂದಿನ ಕಥೆ ತಿಳಿಯಿರಿ",
-  },
-  ml: {
-    label: "മല",
-    eyebrow: "✨ ഇന്ത്യക്കായി എഐ-പവർഡ് യാത്ര",
-    heading: "പ്രാദേശിക താമസസൗകര്യങ്ങൾ, ഗൈഡുകൾ, അനുഭവങ്ങൾ കണ്ടെത്തുക",
-    subheading: "സമീപത്ത് എന്തുണ്ടെന്ന് അറിയാൻ നിങ്ങളുടെ പിൻ കോഡ് നൽകുക",
-    placeholder: "പിൻ കോഡ് നൽകുക, ഉദാ. 570001",
-    explore: "പര്യവേക്ഷണം ചെയ്യുക",
-    planTrip: "🗓️ എഐ ഉപയോഗിച്ച് യാത്ര ആസൂത്രണം ചെയ്യുക",
-    heritage: "📸 പൈതൃക സ്ഥലം പര്യവേക്ഷണം ചെയ്യുക",
-    tripPlanner: "എഐ യാത്രാ പ്ലാനർ",
-    heritageExplorer: "പൈതൃക എക്സ്പ്ലോറർ",
-    wishlist: "ഇഷ്ടപ്പെട്ടവ",
-    packingList: "പാക്കിംഗ് ലിസ്റ്റ്",
-    budgetTracker: "ബജറ്റ് ട്രാക്കർ",
-    translator: "വിവർത്തകൻ",
-    feature1Title: "ഇന്ത്യയിലെ ഏത് പിൻ കോഡും",
-    feature1Desc: "ഓരോ ജില്ലയ്ക്കും യഥാർത്ഥ, തത്സമയ ആകർഷണ ഡാറ്റ",
-    feature2Title: "എഐ-വ്യക്തിഗതമാക്കിയ യാത്രാ പദ്ധതികൾ",
-    feature2Desc: "നിങ്ങളുടെ ബജറ്റിനനുസരിച്ച് ദിവസംതോറുമുള്ള പദ്ധതികൾ",
-    feature3Title: "തൽക്ഷണ പൈതൃക അറിവുകൾ",
-    feature3Desc: "ഒരു ഫോട്ടോ എടുക്കുക, അതിന് പിന്നിലെ കഥ അറിയുക",
-  },
-  ta: {
-    label: "தமி",
-    eyebrow: "✨ இந்தியாவிற்கான AI-இயங்கும் பயணம்",
-    heading: "உள்ளூர் தங்குமிடங்கள், வழிகாட்டிகள் மற்றும் அனுபவங்களைக் கண்டறியுங்கள்",
-    subheading: "அருகில் என்ன இருக்கிறது என்பதை அறிய உங்கள் பின் கோடை உள்ளிடவும்",
-    placeholder: "பின் கோடை உள்ளிடவும், எ.கா. 570001",
-    explore: "ஆராயுங்கள்",
-    planTrip: "🗓️ AI உடன் பயணத்தை திட்டமிடுங்கள்",
-    heritage: "📸 பாரம்பரிய தளத்தை ஆராயுங்கள்",
-    tripPlanner: "AI பயண திட்டமிடுபவர்",
-    heritageExplorer: "பாரம்பரிய எக்ஸ்புளோரர்",
-    wishlist: "விருப்பப்பட்டியல்",
-    packingList: "பேக்கிங் பட்டியல்",
-    budgetTracker: "பட்ஜெட் டிராக்கர்",
-    translator: "மொழிபெயர்ப்பாளர்",
-    feature1Title: "இந்தியாவின் எந்த பின் கோடும்",
-    feature1Desc: "ஒவ்வொரு மாவட்டத்திற்கும் உண்மையான, நேரடி ஈர்ப்பு தரவு",
-    feature2Title: "AI-தனிப்பயனாக்கப்பட்ட பயணத் திட்டங்கள்",
-    feature2Desc: "உங்கள் பட்ஜெட்டின் அடிப்படையில் நாள் வாரியான திட்டங்கள்",
-    feature3Title: "உடனடி பாரம்பரிய நுண்ணறிவுகள்",
-    feature3Desc: "ஒரு புகைப்படம் எடுங்கள், அதன் பின்னணி கதையை அறியுங்கள்",
-  },
+import { useRouter } from "next/router";
+import { motion } from "framer-motion";
+import {
+  MapPin,
+  Wand2,
+  Landmark,
+  Map as MapIcon,
+  Languages,
+  Mic,
+  Luggage,
+  Wallet,
+  MessageCircle,
+  ArrowDown,
+  ArrowUpRight,
+  Sparkles,
+} from "lucide-react";
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 56 },
+  visible: { opacity: 1, y: 0 },
 };
 
-export default function Home() {
-  const [pincode, setPincode] = useState("");
-  const [lang, setLang] = useState("en");
+const features = [
+  {
+    icon: MapPin,
+    title: "Search any PIN code in India",
+    desc: "Real, live data for every district — not just a handful of demo cities. Powered by India Post + OpenTripMap.",
+    color: "from-orange-300 to-pink-400",
+  },
+  {
+    icon: Wand2,
+    title: "AI Trip Planner",
+    desc: "Tell it your destination, days, and budget — get a personalized day-by-day itinerary, generated by AI.",
+    color: "from-fuchsia-300 to-rose-400",
+  },
+  {
+    icon: Landmark,
+    title: "AI Heritage Explorer",
+    desc: "Upload a photo of a monument or statue — AI identifies it and tells you its story.",
+    color: "from-violet-300 to-purple-400",
+  },
+  {
+    icon: MapIcon,
+    title: "Live interactive map",
+    desc: "See hotels, homestays, and real nearby attractions plotted on a real map, for any city in India.",
+    color: "from-cyan-300 to-sky-400",
+  },
+  {
+    icon: MessageCircle,
+    title: "AI Travel Companion",
+    desc: "A floating chat assistant, available on every page, ready to answer any trip question.",
+    color: "from-lime-300 to-emerald-400",
+  },
+  {
+    icon: Mic,
+    title: "Voice Negotiator",
+    desc: "Speak naturally, get instant translation and polite negotiation help in 5 Indian languages.",
+    color: "from-rose-300 to-pink-400",
+  },
+  {
+    icon: Luggage,
+    title: "AI Packing List",
+    desc: "A personalized packing list based on your destination, trip length, and trip type.",
+    color: "from-yellow-200 to-orange-400",
+  },
+  {
+    icon: Wallet,
+    title: "Budget Tracker",
+    desc: "Track every rupee spent against your trip budget, broken down by category.",
+    color: "from-emerald-300 to-teal-400",
+  },
+];
+
+export default function Landing() {
   const router = useRouter();
 
-  useEffect(() => {
-    const saved = localStorage.getItem("lang");
-    if (saved && translations[saved]) setLang(saved);
-  }, []);
-
-  function switchLang(newLang) {
-    setLang(newLang);
-    localStorage.setItem("lang", newLang);
-  }
-
-  function handleSearch(e) {
-    e.preventDefault();
-    if (!pincode.trim()) return;
-    router.push(`/search?pincode=${pincode.trim()}`);
-  }
-
-  const t = translations[lang];
-  const langCodes = ["en", "hi", "kn", "ml", "ta"];
-
   return (
-    <div>
-      <nav className="navbar">
-        <div className="container">
-          <Link href="/" className="logo">TravelMitra</Link>
-          <div className="nav-links">
-            <Link href="/trip-planner">{t.tripPlanner}</Link>
-            <Link href="/heritage-explorer">{t.heritageExplorer}</Link>
-            <Link href="/wishlist">{t.wishlist}</Link>
-            <Link href="/packing-list">{t.packingList}</Link>
-            <Link href="/budget-tracker">{t.budgetTracker || "Budget Tracker"}</Link>
-            <Link href="/translator">{t.translator || "Translator"}</Link>
-            <Link href="/voice-assistant">Negotiator</Link>
-            <div style={{ display: "flex", gap: 4 }}>
-              {langCodes.map((code) => (
-                <button
-                  key={code}
-                  onClick={() => switchLang(code)}
-                  style={{
-                    padding: "4px 9px",
-                    borderRadius: 14,
-                    border: "1px solid #ddd",
-                    background: lang === code ? "#d9622b" : "white",
-                    color: lang === code ? "white" : "#333",
-                    fontSize: 11.5,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                  }}
-                >
-                  {translations[code].label}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
-      </nav>
+    <div className="overflow-hidden bg-[#fff8f1] text-neutral-950">
+      <section className="relative flex min-h-screen items-center justify-center overflow-hidden border-b-2 border-neutral-950 px-5 text-center sm:px-8">
+        <img
+          src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?w=2200&q=90"
+          alt="Hawa Mahal in Jaipur"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/50 to-black/80" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 32, repeat: Infinity, ease: "linear" }}
+          className="pointer-events-none absolute -right-24 top-16 h-72 w-72 rounded-full border border-white/40 sm:h-96 sm:w-96"
+        />
+        <motion.div
+          animate={{ scale: [1, 1.18, 1], opacity: [.35, .7, .35] }}
+          transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
+          className="pointer-events-none absolute -bottom-32 -left-20 h-96 w-96 rounded-full bg-fuchsia-500/40 blur-3xl"
+        />
 
-      <section className="hero">
-        <div className="container">
-          <span className="eyebrow">{t.eyebrow}</span>
-          <h1>{t.heading}</h1>
-          <p>{t.subheading}</p>
-          <form className="search-box" onSubmit={handleSearch}>
-            <input
-              type="text"
-              placeholder={t.placeholder}
-              value={pincode}
-              onChange={(e) => setPincode(e.target.value)}
-            />
-            <button type="submit" className="btn">{t.explore}</button>
-          </form>
-
-          <div className="hero-actions">
-            <Link href="/trip-planner" className="btn-secondary">
-              {t.planTrip}
-            </Link>
-            <Link href="/heritage-explorer" className="btn-secondary">
-              {t.heritage}
-            </Link>
+        <motion.div
+          initial="hidden"
+          animate="visible"
+          variants={fadeUp}
+          transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+          className="relative mx-auto w-full max-w-5xl px-1"
+        >
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/40 bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.17em] text-white backdrop-blur-md">
+            <Sparkles className="h-3.5 w-3.5 text-yellow-300" /> AI-powered travel, made for India
+          </span>
+          <h1 className="tm-heading mt-7 text-5xl leading-[0.9] text-white drop-shadow-2xl sm:text-7xl md:text-8xl lg:text-[7rem]">
+            Made for the
+            <span className="block text-orange-300">unplanned.</span>
+          </h1>
+          <p className="mx-auto mt-7 max-w-2xl text-lg font-bold leading-relaxed text-white/85 sm:text-xl">
+            TravelMitra puts every district, hidden gem, and wild idea in your pocket. Your India era starts here.
+          </p>
+          <div className="mt-14 flex flex-col items-center gap-2 text-white/90">
+            <span className="text-xs font-black uppercase tracking-[0.17em]">Scroll to explore</span>
+            <motion.span animate={{ y: [0, 8, 0] }} transition={{ repeat: Infinity, duration: 1.5 }}>
+              <ArrowDown className="h-5 w-5" />
+            </motion.span>
           </div>
+        </motion.div>
+      </section>
+
+      <section className="relative mx-auto max-w-7xl px-5 py-24 sm:px-8 md:py-32">
+        <div className="absolute left-1/2 top-0 hidden h-full border-l-2 border-dashed border-neutral-950/20 lg:block" />
+        <motion.h2
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.6 }}
+          variants={fadeUp}
+          transition={{ duration: 0.7 }}
+          className="relative mx-auto max-w-3xl text-center tm-heading text-4xl leading-[.95] sm:text-6xl"
+        >
+          Big trip energy,<span className="block text-fuchsia-600">one smooth flow.</span>
+        </motion.h2>
+
+        <div className="relative mt-24 space-y-20 md:space-y-28">
+          {features.map((f, i) => (
+            <motion.div
+              key={f.title}
+              initial={{ opacity: 0, x: i % 2 === 1 ? 72 : -72, y: 28 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.75, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
+              className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-20 ${
+                i % 2 === 1 ? "lg:[&>*:first-child]:order-2" : ""
+              }`}
+            >
+              <motion.div
+                whileHover={{ rotate: i % 2 === 1 ? -2 : 2, y: -7 }}
+                transition={{ type: "spring", stiffness: 300, damping: 18 }}
+                className={`relative min-h-60 overflow-hidden rounded-[2rem] border-[3px] border-neutral-950 bg-gradient-to-br p-6 shadow-[9px_9px_0_0_#171717] sm:min-h-72 sm:p-9 ${f.color}`}
+              >
+                <div className="absolute -right-10 -top-10 h-44 w-44 rounded-full border-[3px] border-neutral-950/20 bg-white/40" />
+                <div className="relative flex h-20 w-20 items-center justify-center rounded-[1.4rem] border-[3px] border-neutral-950 bg-white shadow-[5px_5px_0_0_#171717] sm:h-24 sm:w-24">
+                  <f.icon className="h-9 w-9" strokeWidth={2.6} />
+                </div>
+                <div className="absolute bottom-5 left-5 rounded-xl border-2 border-neutral-950 bg-white px-3 py-1.5 text-xs font-black uppercase tracking-[.15em]">TravelMitra</div>
+                <div className="absolute bottom-4 right-6 text-7xl font-black tracking-tighter text-neutral-950/20">0{i + 1}</div>
+              </motion.div>
+              <div className={i % 2 === 1 ? "lg:text-right" : ""}>
+                <span className="text-sm font-black tracking-[0.15em] text-neutral-500">/0{i + 1}</span>
+                <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-fuchsia-700">{i === 0 ? "PIN-powered discovery" : i === 1 ? "Your itinerary, no tab chaos" : i === 2 ? "History, decoded" : i === 3 ? "See the whole scene" : i === 4 ? "Always-on travel brain" : i === 5 ? "Talk like a local" : i === 6 ? "Carry smarter" : "Spend with confidence"}</p>
+                <h3 className="tm-heading mt-3 text-4xl leading-[.94] sm:text-5xl">
+                  {f.title}
+                </h3>
+                <p className={`mt-5 max-w-lg text-base font-semibold leading-relaxed text-neutral-600 sm:text-lg ${i % 2 === 1 ? "lg:ml-auto" : ""}`}>
+                  {f.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      <section className="feature-strip">
-        <div className="container">
-          <div className="feature-item">
-            <span className="icon">🗺️</span>
-            <h4>{t.feature1Title}</h4>
-            <p>{t.feature1Desc}</p>
-          </div>
-          <div className="feature-item">
-            <span className="icon">🤖</span>
-            <h4>{t.feature2Title}</h4>
-            <p>{t.feature2Desc}</p>
-          </div>
-          <div className="feature-item">
-            <span className="icon">🏛️</span>
-            <h4>{t.feature3Title}</h4>
-            <p>{t.feature3Desc}</p>
-          </div>
-        </div>
+      <section className="relative flex flex-col items-center justify-center gap-6 overflow-hidden border-t-2 border-neutral-950 bg-neutral-950 px-5 py-28 text-center text-white sm:px-8 md:py-36">
+        <motion.div animate={{ x: [0, 40, 0], y: [0, -25, 0] }} transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }} className="absolute -left-20 top-8 h-72 w-72 rounded-full bg-orange-500 blur-[110px]" />
+        <motion.div animate={{ x: [0, -45, 0], y: [0, 25, 0] }} transition={{ duration: 14, repeat: Infinity, ease: "easeInOut" }} className="absolute -right-20 bottom-0 h-72 w-72 rounded-full bg-fuchsia-600 blur-[110px]" />
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.6 }}
+          variants={fadeUp}
+          transition={{ duration: 0.7 }}
+          className="relative"
+        >
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-orange-300">Pack your curiosity</p>
+          <h2 className="tm-heading mt-5 text-5xl leading-[.92] sm:text-7xl">
+            Let&apos;s make stories.
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-lg font-semibold leading-relaxed text-white/75">
+            Bring a PIN code. We&apos;ll bring the local magic, the planning brain, and all the possibilities.
+          </p>
+          <motion.button
+            onClick={() => router.push("/home")}
+            whileHover={{ scale: 1.04, y: -4 }}
+            whileTap={{ scale: .98 }}
+            className="mt-10 inline-flex items-center gap-3 rounded-2xl border-[3px] border-white bg-orange-400 px-7 py-4 text-base font-black uppercase tracking-[0.1em] text-neutral-950 shadow-[7px_7px_0_0_#fff] transition-colors hover:bg-pink-400"
+          >
+            Get started <ArrowUpRight className="h-5 w-5" />
+          </motion.button>
+        </motion.div>
       </section>
     </div>
   );

@@ -1,4 +1,4 @@
-import "../public/styles/globals.css";
+import "../styles/globals.css";
 import TravelCompanion from "../components/TravelCompanion";
 
 export default function App({ Component, pageProps }) {

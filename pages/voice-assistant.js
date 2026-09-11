@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import Link from "next/link";
+import { motion } from "framer-motion";
+import { AppShell, ToolIntro } from "@/components/app-shell";
 
 const languages = [
   { label: "English", code: "en-IN", speechCode: "en-IN" },
@@ -90,46 +91,23 @@ export default function VoiceAssistant() {
   }
 
   const orbState = {
-    idle: { scale: 1, glow: 0.3, label: "Tap to speak" },
-    listening: { scale: 1.15, glow: 0.7, label: "Listening..." },
-    thinking: { scale: 1.05, glow: 0.5, label: "Thinking..." },
-    speaking: { scale: 1.2, glow: 0.9, label: "Speaking..." },
+    idle: { scale: 1, glow: 0.3, label: "Tap to speak", color: "from-violet-500 via-fuchsia-500 to-orange-400" },
+    listening: { scale: 1.15, glow: 0.7, label: "Listening...", color: "from-cyan-400 via-blue-500 to-violet-500" },
+    thinking: { scale: 1.05, glow: 0.5, label: "Thinking...", color: "from-amber-300 via-orange-400 to-rose-500" },
+    speaking: { scale: 1.2, glow: 0.9, label: "Speaking...", color: "from-emerald-400 via-cyan-400 to-blue-500" },
   }[status];
 
   return (
-    <div>
-      <nav className="navbar">
-        <div className="container">
-          <Link href="/" className="logo">TravelMitra</Link>
-          <div className="nav-links">
-            <Link href="/trip-planner">AI Trip Planner</Link>
-            <Link href="/translator">Translator</Link>
-            <Link href="/voice-assistant">Negotiator</Link>
-          </div>
-        </div>
-      </nav>
+    <AppShell>
+      <ToolIntro eyebrow="A voice that travels" title="Voice Negotiator" description="Speak naturally. TravelMitra listens, thinks, and replies in the language you choose." />
 
-      <div className="container detail-page" style={{ textAlign: "center" }}>
-        <h1>Negotiator 🎙️</h1>
-        <p style={{ color: "#666" }}>Speak to TravelMitra in your language.</p>
-
-        {!supported && (
-          <p style={{ color: "#c0392b", marginTop: 20 }}>
-            Voice recognition isn't supported in this browser. Please try Chrome or Edge.
-          </p>
-        )}
-
-        <div style={{ margin: "20px auto", maxWidth: 240 }}>
+      <section className="tm-surface mt-10 overflow-hidden px-5 py-10 text-center sm:px-8 sm:py-12">
+        <div className="mx-auto max-w-xs">
+          <label className="mb-2 block text-left text-xs font-black uppercase tracking-[.14em] text-neutral-600">I&apos;m speaking</label>
           <select
             value={lang.code}
             onChange={(e) => setLang(languages.find((l) => l.code === e.target.value))}
-            style={{
-              width: "100%",
-              padding: 10,
-              borderRadius: 8,
-              border: "1px solid #ddd",
-              fontSize: 14,
-            }}
+            className="tm-input"
           >
             {languages.map((l) => (
               <option key={l.code} value={l.code}>{l.label}</option>
@@ -137,45 +115,67 @@ export default function VoiceAssistant() {
           </select>
         </div>
 
+        {!supported && (
+          <p className="mx-auto mt-8 max-w-xl rounded-2xl border-2 border-red-600 bg-red-50 p-4 text-left font-bold text-red-700">
+            Voice recognition isn't supported in this browser. Please try Chrome or Edge.
+          </p>
+        )}
+
         {supported && (
-          <div style={{ margin: "50px auto", display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <button
+          <div className="relative mx-auto mt-12 flex min-h-80 max-w-lg flex-col items-center justify-center">
+            <motion.div
+              animate={{
+                scale: status === "listening" ? [1, 1.32, 1] : status === "speaking" ? [1, 1.18, 1] : 1,
+                opacity: status === "idle" ? .32 : [.25, .7, .25],
+              }}
+              transition={{ duration: status === "thinking" ? 1.2 : .9, repeat: Infinity, ease: "easeInOut" }}
+              className={`absolute h-60 w-60 rounded-full bg-gradient-to-br blur-3xl ${orbState.color}`}
+            />
+            <motion.div
+              animate={{ rotate: status === "thinking" ? 360 : 0, scale: orbState.scale }}
+              transition={{ rotate: { duration: 1.8, repeat: Infinity, ease: "linear" }, scale: { type: "spring", stiffness: 240, damping: 16 } }}
+              className="relative"
+            >
+              <div className={`absolute inset-0 rounded-full border-2 border-dashed border-neutral-950/40 ${status === "thinking" ? "tm-orb-spin" : ""}`} />
+              <motion.button
               onClick={startListening}
               disabled={status === "listening" || status === "thinking"}
-              style={{
-                width: 140,
-                height: 140,
-                borderRadius: "50%",
-                border: "none",
-                cursor: "pointer",
-                background: `radial-gradient(circle at 30% 30%, #6ea8ff, #2b6cd9)`,
-                boxShadow: `0 0 ${40 * orbState.glow}px ${20 * orbState.glow}px rgba(43, 108, 217, ${orbState.glow * 0.5})`,
-                transform: `scale(${orbState.scale})`,
-                transition: "all 0.3s ease",
-              }}
-            />
-            <p style={{ marginTop: 24, fontWeight: 600, color: "#555" }}>{orbState.label}</p>
+              whileTap={{ scale: .94 }}
+              className={`tm-orb-float relative flex h-48 w-48 items-center justify-center rounded-full border-[3px] border-neutral-950 bg-gradient-to-br shadow-[7px_7px_0_0_#171717] transition-opacity disabled:cursor-wait disabled:opacity-80 ${orbState.color}`}
+              aria-label={orbState.label}
+            >
+              <span className="absolute inset-4 rounded-full border-2 border-white/70" />
+              <span className="absolute left-10 top-9 h-10 w-14 rotate-[-35deg] rounded-full bg-white/70 blur-md" />
+              <span className="relative text-4xl">{status === "thinking" ? "✦" : status === "speaking" ? "◖◗" : "◉"}</span>
+            </motion.button>
+            </motion.div>
+            <div className="mt-9 flex items-end gap-1.5" aria-hidden="true">
+              {[0, 1, 2, 3, 4, 5, 6].map((bar) => (
+                <span key={bar} className={`w-1.5 rounded-full bg-neutral-950 ${status === "idle" ? "h-2" : "tm-audio-bar h-7"}`} style={{ animationDelay: `${bar * .1}s` }} />
+              ))}
+            </div>
+            <p className="mt-4 text-sm font-black uppercase tracking-[.16em] text-neutral-600">{orbState.label}</p>
           </div>
         )}
 
         {transcript && (
-          <div style={{ maxWidth: 480, margin: "0 auto 16px", textAlign: "left" }}>
-            <p style={{ fontSize: 13, color: "#999", marginBottom: 4 }}>You said:</p>
-            <p style={{ background: "white", padding: 14, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+          <div className="mx-auto mb-5 max-w-2xl text-left">
+            <p className="mb-2 text-xs font-black uppercase tracking-[.14em] text-neutral-500">You said</p>
+            <p className="rounded-2xl border-2 border-neutral-950 bg-cyan-100 p-4 font-semibold leading-relaxed">
               {transcript}
             </p>
           </div>
         )}
 
         {reply && (
-          <div style={{ maxWidth: 480, margin: "0 auto", textAlign: "left" }}>
-            <p style={{ fontSize: 13, color: "#999", marginBottom: 4 }}>TravelMitra says:</p>
-            <p style={{ background: "white", padding: 14, borderRadius: 12, boxShadow: "0 2px 10px rgba(0,0,0,0.04)" }}>
+          <div className="mx-auto max-w-2xl text-left">
+            <p className="mb-2 text-xs font-black uppercase tracking-[.14em] text-neutral-500">TravelMitra says</p>
+            <p className="rounded-2xl border-2 border-neutral-950 bg-orange-100 p-4 font-semibold leading-relaxed">
               {reply}
             </p>
           </div>
         )}
-      </div>
-    </div>
+      </section>
+    </AppShell>
   );
 }

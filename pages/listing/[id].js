@@ -1,6 +1,9 @@
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { AppShell } from "@/components/app-shell";
+
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800";
 
 export default function ListingDetail() {
   const router = useRouter();
@@ -65,7 +68,7 @@ export default function ListingDetail() {
     setSubmitting(false);
   }
 
-  if (!listing) return <div className="container">Loading...</div>;
+  if (!listing) return <div className="min-h-screen bg-[#fff8f1] p-10 font-black">Loading your stay...</div>;
 
   const avgRating =
     reviews.length > 0
@@ -73,91 +76,89 @@ export default function ListingDetail() {
       : null;
 
   return (
-    <div>
-      <nav className="navbar">
-        <div className="container">
-          <Link href="/" className="logo">TravelMitra</Link>
-          <div className="nav-links">
-            <Link href="/trip-planner">AI Trip Planner</Link>
-            <Link href="/heritage-explorer">Heritage Explorer</Link>
+    <AppShell>
+      <section className="overflow-hidden rounded-[2rem] border-[3px] border-neutral-950 bg-white shadow-[7px_7px_0_0_#171717]">
+        <div className="relative h-72 border-b-[3px] border-neutral-950 sm:h-96">
+          <img
+            src={listing.image || FALLBACK_IMAGE}
+            alt={listing.name}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = FALLBACK_IMAGE;
+            }}
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+          <span className="absolute left-5 top-5 rounded-xl border-2 border-neutral-950 bg-yellow-300 px-3 py-1.5 text-sm font-black shadow-[2px_2px_0_0_#171717]">₹{listing.price}</span>
+          <div className="absolute bottom-6 left-6 right-6 text-white">
+            <p className="text-xs font-black uppercase tracking-[.15em] text-orange-300">{listing.type} · {listing.city}</p>
+            <h1 className="tm-heading mt-2 text-4xl leading-[.92] sm:text-6xl">{listing.name}</h1>
           </div>
         </div>
-      </nav>
-
-      <div className="container detail-page">
-        <img src={listing.image} alt={listing.name} />
-        <h1>{listing.name}</h1>
-        <p className="meta">
-          {listing.type} · {listing.city} · ⭐ {listing.rating}
+        <div className="grid gap-7 p-6 sm:p-8 lg:grid-cols-[1fr_auto] lg:items-center">
+          <div>
+            <p className="font-bold text-neutral-600">
+              ⭐ {listing.rating}
           {avgRating && (
             <span> · {reviews.length} review{reviews.length !== 1 ? "s" : ""} (avg {avgRating}/5)</span>
           )}
-        </p>
-        <p>{listing.description}</p>
-        <h2>₹{listing.price}</h2>
-        <Link href={`/booking/${listing._id}`} className="btn">
-          Book Now
-        </Link>
+            </p>
+            <p className="mt-4 max-w-2xl font-medium leading-relaxed text-neutral-700">{listing.description}</p>
+          </div>
+          <Link href={`/booking/${listing._id}`} className="inline-flex items-center justify-center rounded-2xl border-2 border-neutral-950 bg-orange-400 px-6 py-4 text-sm font-black uppercase tracking-[.1em] text-neutral-950 shadow-[4px_4px_0_0_#171717] transition-all hover:-translate-y-0.5 hover:bg-pink-400">Book now →</Link>
+        </div>
+      </section>
 
-        <div style={{ marginTop: 60, maxWidth: 600 }}>
-          <h2 style={{ fontFamily: "'Fraunces', serif", fontSize: 26 }}>Reviews</h2>
+        <section className="mt-10 grid gap-8 lg:grid-cols-[1fr_.9fr]">
+          <div className="tm-surface p-6 sm:p-8">
+          <p className="text-xs font-black uppercase tracking-[.16em] text-fuchsia-700">Guest stories</p>
+          <h2 className="tm-heading mt-2 text-3xl">Reviews</h2>
 
-          {reviewsLoading && <p style={{ color: "#888" }}>Loading reviews...</p>}
+          {reviewsLoading && <p className="mt-5 font-semibold text-neutral-500">Loading reviews...</p>}
 
           {!reviewsLoading && reviews.length === 0 && (
-            <p style={{ color: "#888" }}>No reviews yet. Be the first to share your experience!</p>
+            <p className="mt-5 font-semibold text-neutral-500">No reviews yet. Be the first to share your experience!</p>
           )}
 
           {reviews.map((r, i) => (
             <div
               key={i}
-              style={{
-                background: "white",
-                padding: 18,
-                borderRadius: 16,
-                marginBottom: 14,
-                boxShadow: "0 2px 10px rgba(60,40,20,0.05)",
-              }}
+              className="mt-5 rounded-2xl border-2 border-neutral-950 bg-orange-50 p-4"
             >
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
+              <div className="flex justify-between gap-3">
                 <strong>{r.name}</strong>
                 <span>{"⭐".repeat(r.rating)}</span>
               </div>
-              {r.comment && <p style={{ margin: "8px 0 0", color: "#555" }}>{r.comment}</p>}
+              {r.comment && <p className="mt-2 font-medium text-neutral-600">{r.comment}</p>}
             </div>
           ))}
+          </div>
 
-          <div style={{ marginTop: 30 }}>
-            <h3 style={{ fontSize: 18 }}>Leave a review</h3>
+          <div className="tm-surface h-fit p-6 sm:p-8">
+            <p className="text-xs font-black uppercase tracking-[.16em] text-fuchsia-700">Add yours</p>
+            <h3 className="tm-heading mt-2 text-3xl">Leave a review</h3>
 
             {submitted ? (
-              <p style={{ color: "#2e7d32" }}>Thanks for your review! 🎉</p>
+              <p className="mt-5 rounded-xl border-2 border-emerald-700 bg-emerald-50 p-4 font-bold text-emerald-800">Thanks for your review! 🎉</p>
             ) : (
-              <form onSubmit={handleSubmitReview}>
+              <form onSubmit={handleSubmitReview} className="mt-5">
                 <input
                   type="text"
                   placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   required
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    padding: 12,
-                    marginBottom: 12,
-                    borderRadius: 8,
-                    border: "1px solid #ddd",
-                  }}
+                  className="tm-input"
                 />
 
-                <div style={{ marginBottom: 12 }}>
-                  <label style={{ marginRight: 10, fontSize: 14, color: "#666" }}>
+                <div className="mt-3">
+                  <label className="mr-3 text-sm font-bold text-neutral-600">
                     Rating:
                   </label>
                   <select
                     value={rating}
                     onChange={(e) => setRating(Number(e.target.value))}
-                    style={{ padding: 8, borderRadius: 8, border: "1px solid #ddd" }}
+                    className="rounded-lg border-2 border-neutral-950 bg-white px-3 py-2 font-bold"
                   >
                     {[5, 4, 3, 2, 1].map((n) => (
                       <option key={n} value={n}>
@@ -172,30 +173,20 @@ export default function ListingDetail() {
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                   rows={3}
-                  style={{
-                    display: "block",
-                    width: "100%",
-                    padding: 12,
-                    marginBottom: 12,
-                    borderRadius: 8,
-                    border: "1px solid #ddd",
-                    fontFamily: "inherit",
-                    resize: "vertical",
-                  }}
+                  className="tm-input mt-3 min-h-28 resize-y"
                 />
 
                 {submitError && (
-                  <p style={{ color: "#c0392b", marginBottom: 12 }}>{submitError}</p>
+                  <p className="mt-3 font-bold text-red-700">{submitError}</p>
                 )}
 
-                <button type="submit" className="btn" disabled={submitting}>
+                <button type="submit" className="mt-3 w-full rounded-2xl border-2 border-neutral-950 bg-fuchsia-300 px-5 py-3 font-black uppercase tracking-[.1em] text-neutral-950 shadow-[3px_3px_0_0_#171717] hover:bg-orange-300 disabled:cursor-not-allowed disabled:opacity-60" disabled={submitting}>
                   {submitting ? "Submitting..." : "Submit Review"}
                 </button>
               </form>
             )}
           </div>
-        </div>
-      </div>
-    </div>
+        </section>
+    </AppShell>
   );
 }
